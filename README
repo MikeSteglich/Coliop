@@ -1,0 +1,27 @@
+This version is still under development. Please use Coliop as part of CMPL 1.12 until a first stable version of CMPL2 and Coliop is released.
+
+*********** Coliop ************************ 
+Coliop is an (simple) IDE for CMPL. Coliop is a project of the Technical University of Applied Sciences Wildau.
+
+Coliop is an open source project licensed under GPL.
+
+
+For further information please visit the CMPL website (www.coliop.org). 
+
+DOCUMENTATION:
+See the Cmpl/doc subdirectory for documentation. This subdirectory contains a 
+User's Manual in pdf format. See also:
+ 	
+	http://www.coliop.org
+	https://projects.coin-or.org/Cmpl
+
+
+
+
+
+
+
+
+
+
+ 
