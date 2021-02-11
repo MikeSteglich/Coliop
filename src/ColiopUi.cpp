@@ -53,6 +53,14 @@ ColiopUi::ColiopUi(QWidget *parent) :
         _cmplPath = _cmplPath+"/../../../";
     }
 
+    if (!_cmplPath.endsWith(QDir::separator())) {
+        _cmplPath+=QDir::separator();
+    }
+
+    if (_runningOs!="osx" and _runningOs!="windows"){
+        ui->actionOpen_CmplShell->setVisible(false);
+    }
+
     setupFonts();
     problem->setProblemChanged(false);
 
@@ -147,6 +155,8 @@ void ColiopUi::openFirstProblem(QString &fileName)
 void ColiopUi::setupFonts()
 {
     QFont font;
+    QStringList substFonts( QFont::substitutes("Monaco"));
+
     font.setFamily("Monaco");
     font.setFixedPitch(true);
 
@@ -172,7 +182,7 @@ void ColiopUi::on_actionNewColiopWindow() {
     } else if (_runningOs == "osx" or _runningOs== "macos") {
         runProg = "Coliop.app";
     } else {
-        runProg = "Coliop";
+        runProg = "../Coliop";
     }
 
     runProg = _cmplPath+runProg;
@@ -633,6 +643,7 @@ void ColiopUi::enableEditorActions(bool enable) {
         ui->actionPaste->setEnabled(true);
         ui->actionUndo->setEnabled(true);
         ui->actionRedo->setEnabled(true);
+        ui->actionGo_to_line->setEnabled(true);
         if (!ui->cmplEditor->toPlainText().isEmpty()) {
             ui->actionPrint->setEnabled(true);
         } else {
@@ -645,6 +656,7 @@ void ColiopUi::enableEditorActions(bool enable) {
         ui->actionPaste->setDisabled(true);
         ui->actionUndo->setDisabled(true);
         ui->actionRedo->setDisabled(true);
+        ui->actionGo_to_line->setDisabled(true);
 
         if ( ui->clpProblemTab->currentIndex()==1) {
             if (!ui->cmplOutPut->toPlainText().isEmpty()) {
@@ -726,31 +738,26 @@ void ColiopUi::cmplList() {
             }
 
             cap="";
-            QRegExp rx("%data(\\s*)[\:\n\r]{1}");
+            QRegExp rx("%data(\\s*)[\\:\n\r]{1}");
             if(rx.indexIn(actCmplCode, 0) != -1) {
                 problem->addCmplList(problem->getProblemBaseName()+".cdat");
                 continue;
             }
 
-            rx.setPattern("%data([ a-zA-Z0-9\-_\\\\./]*){1}");
+            rx.setPattern("%data\\s*([a-zA-Z0-9\\-_\\\\./]*){1}");
             int pos = 0;
             if ((pos = rx.indexIn(actCmplCode, pos)) != -1) {
                 cap=rx.cap(1).trimmed();
                 if (!cap.isEmpty()) {
                     problem->addCmplList(cap);
+
+                } else {
+                    problem->addCmplList(problem->getProblemBaseName()+".cdat");
                 }
-            }
-            if (pos != -1 )
-                continue;
-
-            rx.setPattern("%data{1}");
-            if(rx.indexIn(actCmplCode, 0) != -1) {
-                problem->addCmplList(problem->getProblemBaseName()+".cdat");
                 continue;
             }
 
-
-            rx.setPattern("%include([ a-zA-Z0-9\-_\\\\./]*){1}");
+            rx.setPattern("%include([ a-zA-Z0-9\\-_\\\\./]*){1}");
             pos = 0;
             if ((pos = rx.indexIn(actCmplCode, pos)) != -1) {
                 cap=rx.cap(1).trimmed();
@@ -993,15 +1000,22 @@ void ColiopUi::on_cmplMessageListClicked()
 void ColiopUi::on_actionOpen_CmplShell_triggered()
 {
     QString runProg;
+    QStringList progArgs = QStringList();
 
     if (_runningOs == "windows" ) {
-        runProg = "cmplShell.bat";
-    } else  {
-        runProg = "open  \""+_cmplPath+"cmplShell\"";
+        runProg = _cmplPath+"..\cmplShell.bat";
+    } else if (_runningOs == "osx" or _runningOs== "macos") {
+        runProg = "open";
+        progArgs.append(_cmplPath+"../cmplShell");
+    } else {
+       runProg = _cmplPath+"../cmplShell";
+
     }
+
 
     _cmplProcessHandler = new QProcess(this);
     _cmplProcessHandler->setProgram(runProg);
+    _cmplProcessHandler->setArguments(progArgs);
     _cmplProcessHandler->start();
 
     if (!_cmplProcessHandler->waitForStarted()) {
@@ -1014,11 +1028,12 @@ void ColiopUi::on_actionOpen_CmplShell_triggered()
  * @brief Saves CMPL's tmp file
  */
 void ColiopUi::saveCmplTmp() {
-    QFile tmpFile = QFile(_cmplTmpFileName);
+
+    QFile tmpFile(_cmplTmpFileName);
     if (tmpFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
         QTextStream stream(&tmpFile);
-        stream << _cmplCwd << Qt::endl;
-        stream << _cmplUrl << Qt::endl;
+        stream << _cmplCwd << endl;
+        stream << _cmplUrl << endl;
     }
 }
 
@@ -1035,7 +1050,7 @@ bool ColiopUi::readCmplTmp() {
         endLine="\n";
     }
 
-    QFile tmpFile = QFile(_cmplTmpFileName);
+    QFile tmpFile(_cmplTmpFileName);
     if (tmpFile.open(QIODevice::ReadOnly)) {
         _cmplCwd = tmpFile.readLine().replace(endLine,"");
         _cmplUrl = tmpFile.readLine().replace(endLine,"");

@@ -61,6 +61,11 @@ CmplRunner::CmplRunner(QObject *parent, QPlainTextEdit *clpOut, QPlainTextEdit *
         _cmplPath = _cmplPath+"/../../../";
     }
 
+    if (!_cmplPath.endsWith(QDir::separator())) {
+        _cmplPath+=QDir::separator();
+    }
+
+
     _cmplBinary = _cmplPath+_cmplBinary;
 
     _generalStatus="";
