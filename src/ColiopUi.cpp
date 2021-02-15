@@ -1002,8 +1002,13 @@ void ColiopUi::on_actionOpen_CmplShell_triggered()
     QString runProg;
     QStringList progArgs = QStringList();
 
+
     if (_runningOs == "windows" ) {
-        runProg = _cmplPath+"..\cmplShell.bat";
+
+        runProg = "rundll32";
+        progArgs.append("url.dll,FileProtocolHandler");
+        progArgs.append( _cmplPath+".."+QDir::separator()+"cmplShell.bat");
+
     } else if (_runningOs == "osx" or _runningOs== "macos") {
         runProg = "open";
         progArgs.append(_cmplPath+"../cmplShell");
@@ -1032,8 +1037,8 @@ void ColiopUi::saveCmplTmp() {
     QFile tmpFile(_cmplTmpFileName);
     if (tmpFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
         QTextStream stream(&tmpFile);
-        stream << _cmplCwd << endl;
-        stream << _cmplUrl << endl;
+        stream << _cmplCwd << Qt::endl;
+        stream << _cmplUrl << Qt::endl;
     }
 }
 
