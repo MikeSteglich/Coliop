@@ -217,6 +217,11 @@ bool CmplRunner::readCmplMessages()
                             QString loc = elemChild2.attribute("location");
 
                             int pos1=loc.indexOf(":");
+#ifdef _WIN32
+                            if (pos1==1) {
+                                pos1=loc.indexOf(":",pos1+1);
+                            }
+#endif
                             cmplMessage.file= loc.left(pos1);
 
                             QString lineStr=loc.mid(pos1+1);

@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QRegExp>
+//#include <QRegularExpression>
 
 #include "CmplHighlighter.hh"
 #include "ClpAbout.hh"
@@ -94,6 +95,8 @@ private:
     QString _cmplCwd;
     QString _cmplTmpFileName;
     QString _cmplPath;
+
+    int _editorFontSize;
 
     QString _runningOs;
 

@@ -44,6 +44,7 @@ ColiopUi::ColiopUi(QWidget *parent) :
     if (!readCmplTmp()) {
         _cmplUrl="http://";
         _cmplCwd="";
+        _editorFontSize=-1;
     }
     _isRemote=false;
 
@@ -159,6 +160,10 @@ void ColiopUi::setupFonts()
 
     font.setFamily("Monaco");
     font.setFixedPitch(true);
+
+    if (_editorFontSize!=-1) {
+        font.setPointSize(_editorFontSize);
+    }
 
     ui->cmplEditor->setFont(font);
     cmplSyntaxHighlighter = new CmplHighlighter(ui->cmplEditor->document());
@@ -1034,11 +1039,14 @@ void ColiopUi::on_actionOpen_CmplShell_triggered()
  */
 void ColiopUi::saveCmplTmp() {
 
+    _editorFontSize=ui->cmplEditor->fontInfo().pointSize();
+
     QFile tmpFile(_cmplTmpFileName);
     if (tmpFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
         QTextStream stream(&tmpFile);
         stream << _cmplCwd << Qt::endl;
         stream << _cmplUrl << Qt::endl;
+        stream << _editorFontSize << Qt::endl;
     }
 }
 
@@ -1057,8 +1065,23 @@ bool ColiopUi::readCmplTmp() {
 
     QFile tmpFile(_cmplTmpFileName);
     if (tmpFile.open(QIODevice::ReadOnly)) {
-        _cmplCwd = tmpFile.readLine().replace(endLine,"");
-        _cmplUrl = tmpFile.readLine().replace(endLine,"");
+
+        int row=1;
+        while (!tmpFile.atEnd()) {
+            switch(row) {
+            case 1:
+                _cmplCwd = tmpFile.readLine().replace(endLine,"");
+                break;
+            case 2:
+                _cmplUrl = tmpFile.readLine().replace(endLine,"");
+                break;
+           case 3:
+                _editorFontSize = tmpFile.readLine().replace(endLine,"").toInt();
+                break;
+            }
+        row++;
+        }
+
         tmpFile.close();
         ret=true;
     }
