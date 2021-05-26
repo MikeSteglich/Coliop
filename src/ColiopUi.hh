@@ -169,6 +169,13 @@ private:
     bool readCmplTmp();
 
 
+    /**
+     * @brief checks asynchronious mode (solve, send, knock, retrieve
+     * @return  asynchronious mode
+     */
+    int checkAsyncMode();
+
+
 private slots:
     /**
      * @brief Opens the file in editor which has been chosen in the file list

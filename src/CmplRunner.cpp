@@ -43,22 +43,24 @@ CmplRunner::CmplRunner(QObject *parent, QPlainTextEdit *clpOut, QPlainTextEdit *
     QString runningOs = QSysInfo::productType();
     _cmplPath = QCoreApplication::applicationDirPath();
 
-    if (_url.isEmpty()) {
+    //if (_url.isEmpty()) {
         if (runningOs == "windows" ) {
-            _cmplBinary = "cmpl.exe";
+            _cmplBinary = "cmpl.bat";
         } else {
             _cmplBinary = "cmpl";
         }
-    } else {
+   /* } else {
         if (runningOs == "windows" ) {
             _cmplBinary = "cmplOnServer.bat";
         } else
             _cmplBinary = "cmplOnServer";
-    }
+    }*/
 
 
     if (runningOs == "osx" or runningOs== "macos") {
-        _cmplPath = _cmplPath+"/../../../";
+        _cmplPath = _cmplPath+"/../../../../";
+    } else {
+        _cmplPath = _cmplPath+"/../";
     }
 
     if (!_cmplPath.endsWith(QDir::separator())) {
@@ -67,6 +69,9 @@ CmplRunner::CmplRunner(QObject *parent, QPlainTextEdit *clpOut, QPlainTextEdit *
 
 
     _cmplBinary = _cmplPath+_cmplBinary;
+    if (runningOs == "windows" ) {
+        _cmplBinary = "\""+_cmplBinary+"\"";
+    }
 
     _generalStatus="";
     _statusMessage="";
@@ -100,7 +105,12 @@ void CmplRunner::run()
 {
     if (QDir::setCurrent(_problem->getProblemPath())) {
 
-        _cmplArgs.append( _problem->getProblem() );
+        QFileInfo fi( _problem->getProblem());
+        QString fileName = fi.fileName();
+
+        //_cmplArgs.append( _problem->getProblem() );
+        _cmplArgs.append( fileName);
+
 
         if (!_url.isEmpty())
             _cmplArgs.append("-url="+_url);

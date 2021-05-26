@@ -52,7 +52,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Coliop 5.0.0</string>
+    <string>Coliop 4.2.0</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

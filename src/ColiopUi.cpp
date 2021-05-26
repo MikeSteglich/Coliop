@@ -62,6 +62,8 @@ ColiopUi::ColiopUi(QWidget *parent) :
         ui->actionOpen_CmplShell->setVisible(false);
     }
 
+    ui->actionSolve_on_server->setVisible(false);
+
     setupFonts();
     problem->setProblemChanged(false);
 
@@ -238,6 +240,9 @@ void ColiopUi::on_actionSolve()
     QString url="";
     if (_isRemote)
         url=_cmplUrl;
+
+    checkAsyncMode();
+    //qDebug() << "asyncMode" << problem->getAsyncMode() ;
 
     _cmplHandler = new CmplRunner(this, ui->cmplOutPut, ui->cmplSolution, problem, url);
 
@@ -762,6 +767,25 @@ void ColiopUi::cmplList() {
                 continue;
             }
 
+            rx.setPattern("%xlsdata(\\s*)[\\:\n\r]{1}");
+            if(rx.indexIn(actCmplCode, 0) != -1) {
+                problem->addCmplList(problem->getProblemBaseName()+".xdat");
+                continue;
+            }
+
+            rx.setPattern("%xlsdata\\s*([a-zA-Z0-9\\-_\\\\./]*){1}");
+            pos = 0;
+            if ((pos = rx.indexIn(actCmplCode, pos)) != -1) {
+                cap=rx.cap(1).trimmed();
+                if (!cap.isEmpty()) {
+                    problem->addCmplList(cap);
+
+                } else {
+                    problem->addCmplList(problem->getProblemBaseName()+".xdat");
+                }
+                continue;
+            }
+
             rx.setPattern("%include([ a-zA-Z0-9\\-_\\\\./]*){1}");
             pos = 0;
             if ((pos = rx.indexIn(actCmplCode, pos)) != -1) {
@@ -1088,5 +1112,36 @@ bool ColiopUi::readCmplTmp() {
     return ret;
 }
 
+/**
+ * @brief checks asynchronious mode (solve, send, knock, retrieve
+ * @return  asynchronious mode
+ */
+int ColiopUi::checkAsyncMode() {
 
+    QStringList probText = ui->cmplEditor->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
+    QString line;
+    bool isComment;
+    isComment=false;
+
+    foreach( line, probText) {
+        if (!isComment && !line.trimmed().startsWith("#") && line.contains("/*"))
+            isComment=true;
+
+        if (isComment && line.contains("*/"))
+            isComment=false;
+
+        if (!isComment) {
+            if (!line.trimmed().startsWith("#")) {
+                if (line.contains("-url"))
+                    problem->setAsyncMode(0);
+                if (line.contains("-send"))
+                    problem->setAsyncMode(1);
+                if (line.contains("-knock"))
+                    problem->setAsyncMode(2);
+                if (line.contains("-retrieve"))
+                    problem->setAsyncMode(3);
+            }
+        }
+    }
+}
