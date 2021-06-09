@@ -427,10 +427,11 @@ void ColiopUi::on_actionOpen_Problem()
     fileName = QFileDialog::getOpenFileName(this,  "Open File", _cmplCwd , "CMPL Files (*.cmpl )");
 
     if (!fileName.isEmpty()) {
+        problem->setActiveCmplIndex(0);
+        ui->clpProblemTab->setCurrentIndex(0);
+
         problem->setProblem(fileName);
         openProblem(fileName);
-
-        problem->setActiveCmplIndex(0);
 
         problem->setProblemChanged(false);
         enableSaveActions(false);
@@ -440,7 +441,7 @@ void ColiopUi::on_actionOpen_Problem()
         ui->clpMessageTab->setVisible(false);
 
         setWindowTitle("Coliop - "+problem->getProblemName());
-        ui->clpProblemTab->setCurrentIndex(0);
+
         ui->actionSolve->setEnabled(true);
         ui->actionSolve_on_server->setEnabled(true);
 

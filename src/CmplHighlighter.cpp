@@ -38,7 +38,7 @@ CmplHighlighter::CmplHighlighter(QTextDocument *parent)
     sectionFormat.setFontWeight(QFont::Bold);
     sectionFormat.setForeground(Qt::darkMagenta);
     QStringList sectionPatterns;
-    sectionPatterns << "\\bparameters\\b" << "\\bvariables\\b" << "\\bobjectives\\b" << "\\bconstraints\\b" << "\\bpar\\b" << "\\bvar\\b" << "\\bobj\\b" << "\\bcon\\b"<< "\\bmeta\\b" << "\\binput\\b"<< "\\boutput\\b";
+    sectionPatterns << "\\bparameters\\b" << "\\bvariables\\b" << "\\bobjectives\\b" << "\\bconstraints\\b" << "\\bpar\\b" << "\\bvar\\b" << "\\bobj\\b" << "\\bcon\\b"<< "\\bsource\\b" << "\\binput\\b"<< "\\boutput\\b";
     foreach (const QString &pattern, sectionPatterns) {
         rule.pattern = QRegExp(pattern);
         rule.format = sectionFormat;
@@ -84,7 +84,7 @@ CmplHighlighter::CmplHighlighter(QTextDocument *parent)
                     << "\\default\\b" << "\\bbreak\\b" << "\\cbontinue\\b" << "\\brepeat\\b" << "\\breturn\\b"
                     << "\\bsum\\b" << "\\bdiv\\b" << "\\bmod\\b" << "\\bT\\b"
                     << "\\bindices\\b" << "\\bsos\\b"
-                    << "\\bsolutionPool\\b" << "\\bnonZeros\\b"
+                    << "\\bsolutionPool\\b" << "\\bnonZeros\\b" << "\\bignoreCons\\b" << "\\bignoreVars\\b"
                     << "\\bactivity\\b" << "\\bmarginal\\b" << "\\blowerBound\\b" << "\\bupperBound\\b" << "\\btype\\b" << "\\bname\\b"
                     << "\\bfile\\b" << "\\bsheet\\b" << "\\bobjValue\\b" << "\\bobjName\\b" << "\\bobjSense\\b" << "\\bobjStatus\\b"
                     << "\\bnrOfVars\\b" << "\\bnrOfCons\\b" << "\\bsolver\\b" << "\\bsolverMsg\\b" ;
