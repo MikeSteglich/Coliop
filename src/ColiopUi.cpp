@@ -208,7 +208,7 @@ void ColiopUi::on_actionNewColiopWindow() {
 void ColiopUi::on_actionNew_Problem()
 {
     ui->cmplEditor->clear();
-    ui->cmplEditor->setPlainText("parameters:\n\nvariables:\n\nobjectives:\n\nconstraints:\n\n");
+    ui->cmplEditor->setPlainText("par:\n\nvar:\n\nobj:\n\ncon:\n\n");
     problem->setDefaults();
 
     ui->actionSolve->setEnabled(false);

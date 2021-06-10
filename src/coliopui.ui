@@ -110,6 +110,9 @@
               <height>0</height>
              </size>
             </property>
+            <property name="tabStopWidth">
+             <number>40</number>
+            </property>
            </widget>
            <widget class="QListWidget" name="cmplList">
             <property name="sizePolicy">
